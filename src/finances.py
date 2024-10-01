@@ -32,7 +32,6 @@ def create_GUI():
     canvas1.create_window(200, 140, window=entry1)
 
 
-
 if __name__ == "__main__":
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
