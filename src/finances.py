@@ -1,10 +1,8 @@
-from methods import *
-from data import expenses_fix, expenses_variable, income
+from methods import read_CSV, split_csv_by_months, finances, summarize_year, \
+      plot_finances, plot_line_expenses
+from categories import expenses_fix, expenses_variable, income
 import click
-import matplotlib.pyplot as plt
-import pandas as pd
 import warnings
-import numpy as np
 import tkinter as tk
 
 @click.command()
@@ -18,14 +16,17 @@ def run(year):
     n_split = split_csv_by_months(data)
     sorted_data = []
     for frame in n_split:
-       sorted_data.append(finances(expenses_fix, expenses_variable, income, frame, year))
-    frame_summarized = summarize_year(year, expenses_fix.keys(), expenses_variable.keys(), income.keys())
+        sorted_data.append(finances(expenses_fix, expenses_variable, income, 
+                                    frame, year))
+    frame_summarized = summarize_year(year, expenses_fix.keys(),
+                                      expenses_variable.keys(), income.keys())
     plot_finances(year)
     plot_line_expenses(year)
     return sorted_data, frame_summarized
 
+
 def create_GUI():
-    root= tk.Tk()
+    root = tk.Tk()
     canvas1 = tk.Canvas(root, width=400, height=300)
     canvas1.pack()
     entry1 = tk.Entry(root) 
