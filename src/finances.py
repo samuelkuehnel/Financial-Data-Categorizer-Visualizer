@@ -1,16 +1,17 @@
 from methods import read_CSV, split_csv_by_months, finances, summarize_year, \
       plot_finances, plot_line_expenses
 from categories import expenses_fix, expenses_variable, income
-import click
+# import click
 import warnings
 import tkinter as tk
 
-@click.command()
-@click.option(
-    "--year",
-    required=True,
-    help="year where finances should be analyzed",
-)
+
+# @click.command()
+# @click.option(
+#     "--year",
+#     required=True,
+#     help="year where finances should be analyzed",
+# )
 def run(year):
     data = read_CSV(f"./{year}.csv")
     n_split = split_csv_by_months(data)
@@ -29,7 +30,7 @@ def create_GUI():
     root = tk.Tk()
     canvas1 = tk.Canvas(root, width=400, height=300)
     canvas1.pack()
-    entry1 = tk.Entry(root) 
+    entry1 = tk.Entry(root)
     canvas1.create_window(200, 140, window=entry1)
 
 

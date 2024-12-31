@@ -27,9 +27,9 @@ def sum_expenses(classes, data, month, year):
         # Dataframe erstellen
         data = pd.concat([data, filtered, filtered]).drop_duplicates(
             keep=False)
-        Path(f"Tabellen/{year}/{month}/Groups").mkdir(parents=True,
-                                                      exist_ok=True)
-        filtered.to_excel(f"Tabellen/{year}/{month}/Groups/" + item +
+        Path(f"files/{year}/{month}/Groups").mkdir(parents=True,
+                                                   exist_ok=True)
+        filtered.to_excel(f"files/{year}/{month}/Groups/" + item +
                           f"_group_{month}.xlsx", index=False, header=True)
         # Summe berechnen
         result[item] = np.round(np.sum(filtered["Betrag"]), decimals=2)
@@ -61,14 +61,14 @@ def finances(expenses_fix, expenses_variable, income, data, year):
         "total_expenses": total_expenses,
         "Ergebnis": total_income + total_expenses}
     data.to_excel(
-        f"Tabellen/{year}/{month}/remaining_{month}.xlsx",
+        f"files/{year}/{month}/remaining_{month}.xlsx",
         index=False, header=True)
     # Dicts zusammenfügen
     tmp = dict(result_income, **result_expenses_fix)
     tmp.update(result_expenses_variables)
     tmp.update(sum_classes)
     pd.DataFrame(tmp, index=[0]).to_excel(
-        f"Tabellen/{year}/{month}/ordered_{month}.xlsx",
+        f"files/{year}/{month}/ordered_{month}.xlsx",
         index=False, header=True)
     return result_income, result_expenses_variables, result_expenses_fix, \
         sum_classes
@@ -88,14 +88,14 @@ def read_months(year):
     for month in range(1, 10):
         try:
             data_months.append(pd.read_excel(
-                f"Tabellen/{year}/0{month}/ordered_0{month}.xlsx"))
+                f"files/{year}/0{month}/ordered_0{month}.xlsx"))
         except Exception as e:
             print(e)
             pass
     for month in range(10, 13):
         try:
             data_months.append(pd.read_excel(
-                f"Tabellen/{year}/{month}/ordered_{month}.xlsx"))
+                f"files/{year}/{month}/ordered_{month}.xlsx"))
         except Exception as e:
             print(e)
             pass
@@ -122,7 +122,7 @@ def summarize_year(year, expenses_fix, expenses_variable, income):
         for field in expenses_variable:
             summarized[field] += np.sum(data[field])
     frame = pd.DataFrame([summarized])
-    frame.to_excel(f"Tabellen/{year}/{year}_summarized.xlsx")
+    frame.to_excel(f"files/{year}/{year}_summarized.xlsx")
     return frame
 
 
@@ -139,7 +139,6 @@ def plot_line_expenses(year):
         diff.append(data["Ergebnis"])
     haushalt, essen_gehen, Kleidung, diff = np.array(haushalt), np.array(
         essen_gehen), np.array(Kleidung), np.array(diff)
-    print(Kleidung, essen_gehen)
     months = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun",
               "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
     fig, ax = plt.subplots()
@@ -151,12 +150,17 @@ def plot_line_expenses(year):
     fig.set_size_inches(15, 10)
     fig.tight_layout()
     fig.legend()
-    fig.savefig(f"Tabellen/{year}/verlauf_kosten_{year}.png")
-    fig.show()
+    fig.savefig(f"src/static/{year}/verlauf_kosten_{year}.png")
+    # fig.show()
 
 
 def plot_barplot_finances(income, expenses, year):
     # split expenses
+    print(expenses.columns)
+    expenses = expenses.drop("total_expenses", axis=1)
+    expenses = expenses.drop("Ergebnis", axis=1)
+    print(income.columns)
+    income = income.drop("total income", axis=1)
     expenses_1 = expenses.iloc[:, :int(len(expenses.columns)/2)]
     expenses_2 = expenses.iloc[:, int(len(expenses.columns)/2):]
     # Plot barplot
@@ -169,7 +173,7 @@ def plot_barplot_finances(income, expenses, year):
     axes[2].set_title("Ausgaben 2")
     fig.set_size_inches(15, 10)
     fig.tight_layout()
-    fig.savefig(f"Tabellen/{year}/summarized_{year}_barplot.png")
+    fig.savefig(f"src/static/{year}/summarized_{year}_barplot.png")
 
 
 def plot_pieplot_finances(income, expenses, year):
@@ -182,14 +186,15 @@ def plot_pieplot_finances(income, expenses, year):
 
     fig.set_size_inches(15, 10)
     fig.tight_layout()
-    fig.savefig(f"Tabellen/{year}/summarized_{year}_pie.png")
+    fig.savefig(f"src/static/{year}/summarized_{year}_pie.png")
 
 
 def plot_finances(year):
-    frame = pd.read_excel(f"Tabellen/{year}/{year}_summarized.xlsx")
+    frame = pd.read_excel(f"files/{year}/{year}_summarized.xlsx")
     del frame[frame.columns[0]]
-    income = frame.loc[:, frame.ge(0).all()]
-    expenses = frame.loc[:, frame.le(0).all()]
+    income = frame.loc[:, frame.ge(0.001).all()]
+    expenses = frame.loc[:, frame.le(-0.001).all()]
+
     plot_barplot_finances(income, expenses, year)
     plot_pieplot_finances(income, expenses, year)
-    plt.show()
+    # plt.show()

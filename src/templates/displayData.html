@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>DataFrame in Flask</title>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.12/dist/js/splide.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.12/dist/css/splide.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mt-5 text-center">Summarized Content</h1>
+      <div class="table-container">
+        {% for table in tables %}
+          <!-- <div class="table-title">{{ titles[loop.index] }}</div> -->
+          <div class="table-responsive">
+            {{ table|safe }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div id="image-slider" class="splide">
+      <div class="splide__track">
+        <ul class="splide__list">
+          {% for index, image in images %}
+          <li class="splide__slide">
+            <img src="{{ url_for('static', filename=year + "/" + image) }}" style="width:100%">
+          </li>
+          {% endfor %}
+        </ul>  
+      </div>
+    </div>
+      <!-- Next and previous buttons -->
+  </div>
+  <script>
+    document.addEventListener( 'DOMContentLoaded', function () {
+    new Splide( '#image-slider' ).mount();
+    } );
+  </script>
+  <style>
+    .splide__slide img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</body>
